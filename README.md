@@ -1,4 +1,4 @@
-# Wolfram Language support for the JavaScript code prettifier
+# Wolfram Language support for the Google Code Prettify
  
 This is the official code highlighter for [Mathematica.stackexchange.com](http://mathematica.stackexchange.com/)
 and [the Wolfram Community](http://community.wolfram.com). It provides the syntax specification
