@@ -4,7 +4,7 @@ This is the official code highlighter for [Mathematica.stackexchange.com](http:/
 and [the Wolfram Community](http://community.wolfram.com). It provides the syntax specification
 for the Wolfram Language required to highlight code with the [Google code prettifier](https://github.com/google/code-prettify). Here is a highlighted example from StackExchange:
 
-![Sample Image](sample.png)
+> ![Sample Image](sample.png)
 
 ## Usage
 
