@@ -78,4 +78,63 @@ xkcdDistort[p_] := Module[{r, ix, iy},
 xkcdConvert[x_] := xkcdDistort[xkcdShow[x]]
 </code></pre>
 
+<h2>Features</h2>
+
+<pre class="prettyprint"><code class="language-mma">
+(* All System symbols from Mathematica 12 are highlighted, e.g. *)
+
+SubsetMap[Reverse, {x1, x2, x3, x4, x5, x6}, {2, 4}]
+ReverseSortBy[{{1, 3}, {2, 1}, {2, 2}, {3, 2}}, Total]
+
+
+(* Strings *)
+
+str = "This is a string"
+
+(* Numbers *)
+
+123
+123.123
+123`
+1.381`
+16^^9fe.c3`7
+3.0`+7
+3`7
+3.000000000000000000000`7
+3.000000000000000000`-7
+2^^101.101
+35^^WolframLanguage
+16^^dead.Beef
+3.98`5*^3
+16^^dead.beef``+4*^-3
+0.0000000001*^10
+35^^small*^-10
+10000000000*^-10
+
+
+(* Only available Named Characters match *)
+(* Correct ones: *)
+
+{ \[Gamma],  \[CapitalEAcute], \[DoubleLeftRightArrow], \[FormalEpsilon] }
+
+(* Incorrect ones: *)
+
+{ \[Plasma],  \[Useless] }
+
+
+(* Patterns and Slots *)
+
+xkcdLabel[{str_, {x1_, y1_}, {xo_, yo_}}]
+Style[x_, st_]
+(# + #)&
+
+
+(* Usage message, In/Out *)
+
+In[1]:= func::usage = "A Usage message"
+Out[1]= "A Usage message"
+
+</code></pre>
+
+
 </html>

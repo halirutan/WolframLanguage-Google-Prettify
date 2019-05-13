@@ -59,36 +59,23 @@
 
     var keywords = new RegExp("^$$KEYWORDS$$\\b");
     var namedCharacters =  new RegExp("\\\\\\[$$NAMEDCHARACTERS$$]");
+    var numbers = new RegExp("^(?:(?:(?:[2-9]|[1-2]\\d|[3][0-5])\\^\\^(?:\\w*\\.\\w+|\\w+\\.\\w*|\\w+))|(?:\\d*\\.\\d+|\\d+\\.\\d*|\\d+))(?:(?:``(?:[+\\-])?(?:\\d*\\.\\d+|\\d+\\.\\d*|\\d+))|(?:`(?:(?:[+\\-])?(?:\\d*\\.\\d+|\\d+\\.\\d*|\\d+))?))?(?:\\*\\^(?:[+\\-])?\\d+)?");
 
     var shortcutStylePatterns = [
         // Whitespaces, linebreaks, tabs
         [PR.PR_PLAIN,   /^[\t\n\r \xA0]+/, null, '\t\n\r \xA0'],
 
-        // quoted strings
-//        [PR.PR_STRING,      /^(?:"(?:[^"\\]|\\[\s\S])*(?:"|$)|'(?:[^'\\]|\\[\s\S])(?:'|$))/, null, '"\'']
         [PR.PR_STRING,      /^(?:"(?:[^"\\]|\\[\s\S])*(?:"|$))/, null, '"']
 
     ];
-
-    // used pattern building blocks
-    var pBase = "(?:\\d+)";
-    var pFloat = "(?:\\.\\d+|\\d+\\.\\d*|\\d+)";
-    var pFloatBase = "(?:\\.\\w+|\\w+\\.\\w*|\\w+)";
-    var pPrecision = "(?:`(?:`?"+pFloat+")?)";
-
-    //var pVariable = "(?:[a-zA-Z\\$]+[a-zA-Z0-9\\$`]*)";
 
     var fallthroughStylePatterns = [
 
         // Flat comments. Start with (* and end with *). Can go over several lines and must not be nested.
         [PR.PR_COMMENT, /^\(\*[\s\S]*?\*\)/, null],
 
-        // Numbers in a baseform
-        [PR.PR_LITERAL, new RegExp('^(?:'+pBase+'(?:\\^\\^'+pFloatBase+pPrecision+'?(?:\\*\\^[+-]?\\d+)?))'),null],
-
-        // Mathematica numbers. Floats (1.2, .2, 1.) can have optionally a precision (`float) or an accuracy definition
-        // (``float). Note: while 1.2` is possible 1.2`` is not. At the end an exponent (float*^+12) can follow.
-        [PR.PR_LITERAL, new RegExp('^(?:' + pFloat + pPrecision + '?(?:\\*\\^[+-]?\\d+)?)'),null],
+        // Numbers
+        [PR.PR_LITERAL, numbers, null],
 
         ['mma_iot', /^(?:In|Out)\[[0-9]*]/,null],
 
