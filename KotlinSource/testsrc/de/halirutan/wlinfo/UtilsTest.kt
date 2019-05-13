@@ -43,7 +43,8 @@ internal class UtilsTest {
         val symbolListURL = UtilsTest::class.java.getResource(symbolsFile)
         val words = File(wordListURL.toURI()).readLines()
         val symbols = File(symbolListURL.toURI()).readLines()
-        val regex = Regex(createReducedRegex(symbols))
+// for the usage here, we need to un-escape on level in front of the dollar signs
+        val regex = Regex(createReducedRegex(symbols).replace("\\\\$", "\\$"))
         var matches = true
         val time = measureTimeMillis {
             for (w in symbols) {
