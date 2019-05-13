@@ -1,4 +1,4 @@
-// Copyright (C) 2017 Patrick Scheibe
+// Copyright (C) 2019 Patrick Scheibe
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,6 +23,9 @@
  *      <pre class="prettyprint lang-mma"></pre>
  *
  * History:
+ *
+ * 05/13/2019 Update to Wolfram Language version 12. Changing the regex for matching
+ * all the built-in symbols into a trie like structure.
  *
  * 01/22/2017 Updated to Mathematica 11.0.1
  *
@@ -54,8 +57,8 @@
 
 (function () {
 
-    var keywords = new RegExp('^$$KEYWORDS$$\\b');
-    var namedCharacters =  new RegExp('\\\\\\[$$NAMEDCHARACTERS$$]');
+    var keywords = new RegExp("^$$KEYWORDS$$\\b");
+    var namedCharacters =  new RegExp("\\\\\\[$$NAMEDCHARACTERS$$]");
 
     var shortcutStylePatterns = [
         // Whitespaces, linebreaks, tabs

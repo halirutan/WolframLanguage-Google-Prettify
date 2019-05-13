@@ -16,7 +16,7 @@ fun createReducedRegex(words: List<String>): String {
     fun visit(node: Node) {
         builder.append(
                 if (node.content == '$') {
-                    "\\$"
+                    "\\\\$"
                 } else {
                     node.content
                 }

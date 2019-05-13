@@ -67,16 +67,15 @@ $builtInNames := Sort[
   ]
 ];
 
+(* This is just some non function words for performance testing the regex *)
+$dictWords = DictionaryLookup[RegularExpression["[" <> StringJoin@CharacterRange["A", "M"] <> "].*"]];
+
 PackageExport["createUnitTestWordList"]
-createUnitTestWordList[outputDir_ /; DirectoryQ[outputDir]] := Module[
+createUnitTestWordList[outputDir_ /; DirectoryQ[outputDir]] :=
   {
-    wrong = DictionaryLookup[RegularExpression["[" <> StringJoin@CharacterRange["A", "M"] <> "].*"]]
-  },
-  {
-    Export[FileNameJoin[{outputDir, "words.txt"}], wrong, "Table"],
+    Export[FileNameJoin[{outputDir, "words.txt"}], $dictWords, "Table"],
     Export[FileNameJoin[{outputDir, "symbolNames.txt"}], $builtInNames, "Table"]
-  }
-];
+  };
 
 PackageExport["namedCharacterQ"]
 namedCharacterQ[c_Integer] := With[
@@ -103,19 +102,17 @@ codePointToCharacterName[code_Integer] := With[
 PackageExport["createTrieRegex"]
 createTrieRegex[words : {_String..}] := Utils`createReducedRegex[words];
 
-PackageExport["createNamedCharacterRegex"]
-createNamedCharacterRegex[] := Module[
+PackageExport["namedCharactersList"]
+namedCharactersList[] := Module[
   {
-    range = Select[Range[16^^FFFF], namedCharacterQ[#]&],
-    chars
+    range = Select[Range[16^^FFFF], namedCharacterQ[#]&]
   },
-  chars = codePointToCharacterName /@ range;
-  Utils`createReducedRegex[chars]
+  codePointToCharacterName /@ range
 ];
 
 
-PackageExport["buildJavaScriptRegexes"]
-buildJavaScriptRegexes[] := buildJavaScriptRegexes[FileNameJoin[
+PackageExport["buildJavaScriptTrieRegex"]
+buildJavaScriptTrieRegex[] := buildJavaScriptTrieRegex[FileNameJoin[
   {
     $thisDirectory,
     "..",
@@ -125,22 +122,94 @@ buildJavaScriptRegexes[] := buildJavaScriptRegexes[FileNameJoin[
   }
 ]];
 
-buildJavaScriptRegexes[highlighterTemplateJS_String /; FileExistsQ[highlighterTemplateJS]] := Module[
+buildJavaScriptTrieRegex[highlighterTemplateJS_String /; FileExistsQ[highlighterTemplateJS]] := Module[
   {
-    code = Import[highlighterTemplateJS, "String"]
+    code = Import[highlighterTemplateJS, "String"],
+    filename
   },
   code = StringReplace[code,
     {
       "$$KEYWORDS$$" -> createTrieRegex[$builtInNames],
-      "$$NAMEDCHARACTERS$$" -> createNamedCharacterRegex[]
+      "$$NAMEDCHARACTERS$$" -> createTrieRegex[namedCharactersList[]]
     }
   ];
-  Export[FileNameJoin[
+  filename = Export[FileNameJoin[
     {
       DirectoryName[highlighterTemplateJS],
-      "lang-mma-" <> ToString[$VersionNumber] <> ".js"
+      "lang-mma.js"
     }],
     code,
     "String"
-  ]
+  ] // FileBaseName;
+  code = Import[
+    FileNameJoin[{DirectoryName[highlighterTemplateJS], "performance-page-TEMPLATE.html"}],
+    "String"
+  ];
+  code = StringReplace[
+    code,
+    {
+      "$$SCRIPTNAME$$" -> filename <> ".js",
+      "$$MMACODE$$" -> ExportString[Partition[Join[$builtInNames, $dictWords], 5], "Table"]
+    }
+  ];
+  Export[
+    FileNameJoin[{DirectoryName[highlighterTemplateJS], "performance-page-trie-regex.html"}],
+    code,
+    "String"
+  ];
 ];
+
+toAlternatives[words_List] := StringJoin[
+  "(:?",
+  StringReplace[StringRiffle[words, "|"], "$" -> "\\\\$"],
+  ")"
+];
+
+PackageExport["buildJavaScriptAlternativeRegex"]
+buildJavaScriptAlternativeRegex[] := buildJavaScriptAlternativeRegex[FileNameJoin[
+  {
+    $thisDirectory,
+    "..",
+    "..",
+    "JSHighlighter",
+    "lang-mma-TEMPLATE.js"
+  }
+]];
+
+buildJavaScriptAlternativeRegex[highlighterTemplateJS_String /; FileExistsQ[highlighterTemplateJS]] := Module[
+  {
+    code = Import[highlighterTemplateJS, "String"],
+    filename
+  },
+  code = StringReplace[code,
+    {
+      "$$KEYWORDS$$" -> toAlternatives[$builtInNames],
+      "$$NAMEDCHARACTERS$$" -> toAlternatives[namedCharactersList[]]
+    }
+  ];
+  filename = Export[FileNameJoin[
+    {
+      DirectoryName[highlighterTemplateJS],
+      "lang-mma-alternative-regex.js"
+    }],
+    code,
+    "String"
+  ] // FileBaseName;
+  code = Import[
+    FileNameJoin[{DirectoryName[highlighterTemplateJS], "performance-page-TEMPLATE.html"}],
+    "String"
+  ];
+  code = StringReplace[
+    code,
+    {
+      "$$SCRIPTNAME$$" -> filename <> ".js",
+      "$$MMACODE$$" -> ExportString[Partition[Join[$builtInNames, $dictWords], 5], "Table"]
+    }
+  ];
+  Export[
+    FileNameJoin[{DirectoryName[highlighterTemplateJS], "performance-page-alternative-regex.html"}],
+    code,
+    "String"
+  ];
+];
+

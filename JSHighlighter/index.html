@@ -1,0 +1,81 @@
+<html lang="">
+<head>
+    <title>Wolfram Language code highlighting</title>
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+    <script src="lang-mma.min.js"></script>
+    <link rel="stylesheet" href="prettify-mma.css">
+</head>
+<body>
+<noscript>This page requires JavaScript</noscript>
+</body>
+<h1>Test-page for Wolfram Language code highlighting</h1>
+
+The highlighted box you see below uses a Wolfram Language syntax specification
+for <a href="https://github.com/google/code-prettify">Google Code Prettify</a> which can be found in
+<a href="https://github.com/halirutan/WolframLanguage-Google-Prettify">this repository.</a>
+The page you see right now is located in the <code>JSHighlighter</code> directory and
+uses the Google code prettify by including the following in the head of the html page:
+
+<pre class="prettyprint"><code class="language-html">
+&lt;script src=&quot;https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;lang-mma.min.js&quot;&gt;&lt;/script&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;prettify-mma.css&quot;&gt;
+</code>
+</pre>
+
+The first script loads the Code Prettify engine and default languages. The second script
+adds definitions for the Wolfram Language and the CSS adjusts color. The Wolfram Language
+code-box in the end was created by wrapping Wolfram Language code in
+
+<pre class="prettyprint"><code class="language-html">
+&lt;pre class=&quot;prettyprint&quot;&gt;&lt;code class=&quot;language-mma&quot;&gt;
+    code
+&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
+
+Below you find an example of highlighted Wolfram Language code. For the purpose of profiling
+the speed in which build-in symbols are matched, you can find two specific pages which contain
+all 7000 built-in symbols and 7000 dictionary words (as negative matches):
+
+<ul>
+    <li><a href="performance-page-trie-regex.html">performance-page-trie-regex.html</a> uses a JS script where the regex for
+    the built-in symbols bases on a Trie. It should improve performance of matching (and does in Kotlin), but I couldn't measure
+    much of a difference in JavaScript because the overhead of rendering the page is quite large. The file size of the script is notably smaller though.</li>
+    <li><a href="performance-page-alternative-regex.html">performance-page-alternative-regex.html</a> uses a JS script where the
+    regex for built-in symbols simply lists all symbol names as an alternative pattern.</li>
+</ul>
+
+<pre class="prettyprint"><code class="language-mma">
+xkcdStyle = {FontFamily -> "Comic Sans MS", 16};
+
+xkcdLabel[{str_, {x1_, y1_}, {xo_, yo_}}] := Module[{x2, y2},
+   x2 = x1 + xo; y2 = y1 + yo;
+   {Inset[
+     Style[str, xkcdStyle], {x2, y2}, {1.2 Sign[x1 - x2],
+      Sign[y1 - y2] Boole[x1 == x2]}], Thick,
+    BezierCurve[{{0.9 x1 + 0.1 x2, 0.9 y1 + 0.1 y2}, {x1, y2}, {x2, y2}}]}];
+
+xkcdRules = {EdgeForm[ef:Except[None]] :> EdgeForm[Flatten@{ef, Thick, Black}],
+   Style[x_, st_] :> Style[x, xkcdStyle],
+   Pane[s_String] :> Pane[Style[s, xkcdStyle]],
+   {h_Hue, l_Line} :> {Thickness[0.02], White, l, Thick, h, l},
+   Grid[{{g_Graphics, s_String}}] :> Grid[{{g, Style[s, xkcdStyle]}}],
+   Rule[PlotLabel, lab_] :> Rule[PlotLabel, Style[lab, xkcdStyle]]};
+
+xkcdShow[p_] := Show[p, AxesStyle -> Thick, LabelStyle -> xkcdStyle] /. xkcdRules
+
+xkcdShow[Labeled[p_, rest__]] :=
+ Labeled[Show[p, AxesStyle -> Thick, LabelStyle -> xkcdStyle], rest] /. xkcdRules
+
+xkcdDistort[p_] := Module[{r, ix, iy},
+   r = ImagePad[Rasterize@p, 10, Padding -> White];
+   {ix, iy} =
+    Table[RandomImage[{-1, 1}, ImageDimensions@r]~ImageConvolve~
+      GaussianMatrix[10], {2}];
+   ImagePad[ImageTransformation[r,
+     # + 15 {ImageValue[ix, #], ImageValue[iy, #]} &, DataRange -> Full], -5]];
+
+xkcdConvert[x_] := xkcdDistort[xkcdShow[x]]
+</code></pre>
+
+</html>
