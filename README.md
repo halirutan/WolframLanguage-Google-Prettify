@@ -10,7 +10,7 @@ for the Wolfram Language required to highlight code with the [Google code pretti
 
 To use it with your installation of [google-code-prettify](https://github.com/google/code-prettify), you have to add the minified JavaScript language definition `lang-mma.min.js` from the `JSHighlighter` directory to your code-prettify installation.
 Another way is to load the Wolfram Language highlighter after code-prettify in your HTML code.
-The `JSHighlighter` directory contains an `index.html` that [shows how it works](JSHighlighter/index.html).
+The `JSHighlighter` directory contains an `index.html` that [shows how it works](https://halirutan.github.io/WolframLanguage-Google-Prettify/JSHighlighter/index.html).
 Further information can be found in the [google-code-prettify repository](https://github.com/google/code-prettify).
 
 ## Building and Development
@@ -48,6 +48,10 @@ Surprisingly, the `(:?Names|NamespaceBox|NamespaceBoxOptions)` alternative patte
 This difference is not noticeable and since the `lang-mma.min.js` Trie version (88kB) is much smaller than the alternative pattern
 `lang-mma-alternative-regex.min.js` (127kB), I would suggest to use the Trie version. However, if readability counts because
 you want to check easily if a symbol is included in the regex, then the alternative pattern version is to be preferred.
+You can perform your own performance tests by using
+
+- [this page](https://halirutan.github.io/WolframLanguage-Google-Prettify/JSHighlighter/performance-page-trie-regex.html) for testing the Trie version of the regex
+- [this page](https://halirutan.github.io/WolframLanguage-Google-Prettify/JSHighlighter/performance-page-alternative-regex.html) for using the alternative pattern version of the regex
 
 ### Repository Structure
 
